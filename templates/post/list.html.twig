@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/post-list.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4 text-dark fw-bold" style="animation: fadeInAnimation 1.5s ease-in-out;">
+        Liste des articles
+    </h1>
+
+    {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+        <div class="text-center mb-4">
+            <a href="{{ path('post_create') }}" class="btn btn-primary btn-lg px-4 py-2 hover-illuminate fw-bold">
+                Créer un nouvel article
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="row g-4">
+        {% for post in posts %}
+            <div class="col-md-6 col-lg-4 fade-in">
+                <div class="card shadow-lg rounded-3 h-100 transition-shadow">
+                    {% if post.picture %}
+                        <img src="{{ asset('uploads/posts/' ~ post.picture) }}" class="card-img-top" alt="Image de {{ post.title }}" style="max-height: 200px; object-fit: cover;">
+                    {% else %}
+                        <p class="text-center text-muted py-5">Pas d'image disponible</p>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold text-dark">{{ post.title }}</h5>
+                        <p class="card-text text-muted">{{ post.content|slice(0, 100) }}...</p>
+                        <div class="mt-auto">
+                            <a href="{{ path('post_show', {id: post.id}) }}" class="btn btn-primary w-100 hover-illuminate">
+                                Lire la suite
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light text-muted">
+                        <small>Publié le : {{ post.publishedAt ? post.publishedAt|date('d/m/Y à H:i') : 'Date non définie' }}</small>
+                        <br>
+                        <small>Catégorie : {{ post.category.name }}</small>
+                    </div>
+
+                    {% if app.user and 'ROLE_ADMIN' in app.user.roles %}
+                        <div class="card-footer text-end">
+                            <form action="{{ path('post_delete', {id: post.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% else %}
+            <p class="text-center text-muted">Aucun article disponible pour le moment.</p>
+        {% endfor %}
+    </div>
+
+    <div class="pagination-container d-flex justify-content-center mt-4">
+        <nav aria-label="Pagination">
+            <ul class="pagination-modern">
+                {% if currentPage > 1 %}
+                    <li class="page-item">
+                        <a href="{{ path('post_list', {page: currentPage - 1}) }}" class="page-link-modern" aria-label="Précédent">
+                            &laquo;
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for i in 1..totalPages %}
+                    <li class="page-item {% if i == currentPage %}active{% endif %}">
+                        <a href="{{ path('post_list', {page: i}) }}" class="page-link-modern">{{ i }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if currentPage < totalPages %}
+                    <li class="page-item">
+                        <a href="{{ path('post_list', {page: currentPage + 1}) }}" class="page-link-modern" aria-label="Suivant">
+                            &raquo;
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<footer class="text-center py-4 bg-light mt-5 border-top" style="background-color: #6c63ff; color: white;">
+    <p class="text-muted mb-0">&copy; {{ "now"|date("Y") }} Mon Blog Moderne. Tous droits réservés.</p>
+    <div>
+        <a href="https://www.instagram.com/enzo_martzz/" target="_blank" class="text-black mx-2">
+            <i class="fab fa-instagram" style="font-size: 24px;"></i>
+        </a>
+        <a href="https://www.tiktok.com/@enzo_martz" target="_blank" class="text-black mx-2">
+            <i class="fab fa-tiktok" style="font-size: 24px;"></i>
+        </a>
+        <a href="https://github.com/havenito/Blog" target="_blank" class="text-black mx-2">
+            <i class="fab fa-github" style="font-size: 24px;"></i>
+        </a>
+    </div>
+</footer>
+{% endblock %}

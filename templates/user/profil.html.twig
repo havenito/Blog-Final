@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('bootstrap/css/profil.css') }}">
+{% endblock %}
+
+{% block title %}Mon Profil{% endblock %}
+
+{% block body %}
+<div class="profil-container mt-5">
+    <h1 class="mb-4 profil-title text-center">Mon Profil</h1>
+
+    {% if user %}
+        <div class="profil-card shadow-sm border-0">
+            <div class="row g-0">
+                <div class="col-md-4 d-flex align-items-center justify-content-center p-4">
+                    <img 
+                        src="{{ user.profilePicture ? asset('uploads/posts/' ~ user.profilePicture) : asset('images/default-profile.png') }}" 
+                        class="img-fluid rounded-circle shadow-sm" 
+                        alt="Photo de profil de {{ user.firstName }}" 
+                        style="max-width: 200px; height: auto;">
+                </div>
+
+                <div class="col-md-8">
+                    <div class="profil-card-body">
+                        <h5 class="profil-card-title text-dark">
+                            {{ user.firstName }} {{ user.lastName }}
+                        </h5>
+                        <p class="profil-card-text text-muted">
+                            <strong>Email :</strong> {{ user.email }}<br>
+                            <strong>Prénom :</strong> {{ user.firstName }}<br>
+                            <strong>Nom :</strong> {{ user.lastName }}<br>
+                            <strong>Rôle(s) :</strong> {{ user.roles|join(', ') }}<br>
+                            <strong>Statut :</strong> {{ user.isActive ? 'Actif' : 'Inactif' }}<br>
+                            <strong>Créé le :</strong> {{ user.createdAt|date('d/m/Y H:i') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profil-text-center mt-4">
+            <a href="{{ path('main') }}" class="profil-btn-primary">
+                <i class="bi bi-house-door-fill me-2"></i> Revenir à l'Accueil
+            </a>
+        </div>
+
+    {% else %}
+        <div class="profil-alert profil-alert-warning text-center">
+            Vous n'êtes pas connecté. Veuillez vous connecter pour voir votre profil.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
